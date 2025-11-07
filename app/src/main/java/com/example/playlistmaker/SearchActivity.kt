@@ -83,10 +83,8 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-        val onItemClickListener = object : OnItemClickListener {
-            override fun onItemClick(item: Track) {
-                val position = listTrack.indexOf(item)
-            }
+        val onItemClickListener = OnItemClickListener { item ->
+            val position = listTrack.indexOf(item)
         }
 
         val recyclerView = findViewById<RecyclerView>(R.id.list_track)
