@@ -36,4 +36,30 @@
         <item name="maxLines">1</item>
     </style>
 
+    <style name="CustomTextStyle">
+        <item name="android:fontFamily">@font/ys_display_light</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">0dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="TrackTitleStyle" parent="CustomTextStyle">
+        <item name="android:textColor">@color/search_title_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ArtistTextStyle" parent="CustomTextStyle">
+        <item name="android:textColor">@color/artist_name</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="ArrowIconStyle">
+        <item name="android:layout_width">8dp</item>
+        <item name="android:layout_height">14dp</item>
+        <item name="android:tint">@color/artist_name</item>
+    </style>
+
+
 </resources>

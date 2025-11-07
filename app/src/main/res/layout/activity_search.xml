@@ -12,23 +12,30 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/back"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         app:title="@string/search"
-        app:titleTextColor="@color/black"
+        app:titleTextColor="@color/search_title_color"
         app:titleTextAppearance="@style/CustomMaterialToolbar"
         app:navigationIcon="@drawable/ic_back_arrow"
-        app:navigationIconTint="@color/black"
+        app:navigationIconTint="@color/search_title_color"
         />
 
     <EditText
         android:id="@+id/searchEditText"
         style="@style/SearchEditTextStyle"
         android:layout_width="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:drawableEnd="@drawable/ic_clear_16x16"
         android:inputType="text"
         android:singleLine="true" />
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_track"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
