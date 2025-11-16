@@ -51,7 +51,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val iTunesService = retrofit.create(ITunesApi::class.java)
 
-    var listTrack = listOf<Track>()
+    private var listTrack = listOf<Track>()
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,12 +96,7 @@ class SearchActivity : AppCompatActivity() {
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                val query = s?.toString().orEmpty()
-//                val filtered = listTrack.filter {
-//                    it.trackName.contains(query, ignoreCase = true) ||
-//                            it.artistName.contains(query, ignoreCase = true)
-//                }
-//                tracksAdapter.updateList(filtered)
+
             }
         })
 

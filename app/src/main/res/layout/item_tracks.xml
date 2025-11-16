@@ -47,9 +47,9 @@
         android:layout_width="14dp"
         android:layout_height="14dp"
         android:src="@drawable/ic_dot_13"
-        app:layout_constraintTop_toTopOf="@id/tvArtist"
         app:layout_constraintBottom_toBottomOf="@id/tvArtist"
-        app:layout_constraintStart_toEndOf="@id/tvArtist" />
+        app:layout_constraintStart_toEndOf="@id/tvArtist"
+        app:layout_constraintTop_toTopOf="@id/tvArtist" />
 
     <TextView
         android:id="@+id/tvDuration"
