@@ -1,6 +1,7 @@
 package com.example.playlistmaker.viewholder
 
 import android.content.res.Resources
+import android.text.Html
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,14 +21,20 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private val artworkUrl100: ImageView = itemView.findViewById(R.id.ivAlbumArt)
 
     fun bind(item: Track) {
-        trackName.text = item.trackName
-        artistName.text = item.artistName
-        trackTime.text = item.trackTime
+        trackName.text = item.trackName.trim()
+        artistName.text = item.artistName.trim()
+        trackTime.text = formatTrackTime(item.trackTimeMillis)
         Glide.with(itemView.context)
             .load(item.artworkUrl100)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
             .transform(CenterCrop(), RoundedCorners((2 / Resources.getSystem().displayMetrics.density).roundToInt()))
             .into(artworkUrl100)
+    }
+
+    fun formatTrackTime(millis: Long): String {
+        val minutes = millis / 1000 / 60
+        val seconds = (millis / 1000 % 60).toString().padStart(2, '0')
+        return "$minutes:$seconds"
     }
 }
