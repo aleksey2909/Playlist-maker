@@ -6,9 +6,13 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
+import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -18,22 +22,36 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.adapter.TracksAdapter
 import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.model.TracksResponse
 import com.google.android.material.appbar.MaterialToolbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
     private lateinit var clearDrawable: Drawable
     private lateinit var searchDrawable: Drawable
+    private lateinit var tracksAdapter: TracksAdapter
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var icProblem: ImageView
+    private lateinit var tvProblem: TextView
+    private lateinit var btnUpdate: Button
     private var searchQuery: String = ""
 
-    var listTrack = listOf(
-            Track("Smells Like Teen Spirit", "Nirvana", "5:01", "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"),
-            Track("Billie Jean", "Michael Jackson", "4:35", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"),
-            Track("Stayin' Alive", "Bee Gees", "4:10", "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"),
-            Track("Whole Lotta Love", "Led Zeppelin", "5:33", "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"),
-            Track("Sweet Child O'Mine", "Guns N' Roses", "5:03", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"))
+    private val iTunesBaseUrl = "https://itunes.apple.com"
 
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(iTunesBaseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val iTunesService = retrofit.create(ITunesApi::class.java)
+
+    private var listTrack = listOf<Track>()
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +72,22 @@ class SearchActivity : AppCompatActivity() {
         searchEditText = findViewById(R.id.searchEditText)
         clearDrawable = ContextCompat.getDrawable(this, R.drawable.ic_clear_16x16)!!
         searchDrawable = ContextCompat.getDrawable(this, R.drawable.ic_search_icon)!!
+        icProblem = findViewById(R.id.icProblem)
+        tvProblem = findViewById(R.id.tvProblem)
+        btnUpdate = findViewById(R.id.btnReconnect)
 
         searchEditText.setText(searchQuery)
         updateIcons(searchEditText.text)
+
+        val onItemClickListener = OnItemClickListener { item ->
+            val position = listTrack.indexOf(item)
+        }
+
+        recyclerView = findViewById<RecyclerView>(R.id.list_track)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        tracksAdapter = TracksAdapter(listTrack, onItemClickListener)
+        recyclerView.adapter = tracksAdapter
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -64,8 +95,29 @@ class SearchActivity : AppCompatActivity() {
                 updateIcons(s)
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
         })
+
+        btnUpdate.setOnClickListener {
+            val query = searchEditText.text?.toString().orEmpty()
+            if (query.isNotEmpty()) {
+                search(query)
+            }
+        }
+
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val query = searchEditText.text?.toString().orEmpty()
+                if (query.isNotEmpty()) {
+                    search(query)
+                }
+                true
+            } else {
+                false
+            }
+        }
 
         searchEditText.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
@@ -76,6 +128,7 @@ class SearchActivity : AppCompatActivity() {
                 val drawableWidth = drawableEnd.bounds.width()
                 if (x >= width - padding - drawableWidth) {
                     searchEditText.text.clear()
+                    tracksAdapter.updateList(emptyList())
                     hideKeyboard()
                     return@setOnTouchListener true
                 }
@@ -83,21 +136,56 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-        val onItemClickListener = OnItemClickListener { item ->
-            val position = listTrack.indexOf(item)
-        }
-
-        val recyclerView = findViewById<RecyclerView>(R.id.list_track)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val tracksAdapter = TracksAdapter(listTrack, onItemClickListener)
-        recyclerView.adapter = tracksAdapter
-
     }
+
+    private fun search(query: String) {
+        iTunesService.search(query).enqueue(object : Callback<TracksResponse> {
+            override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
+                if (response.isSuccessful) {
+                    listTrack = response.body()?.results ?: emptyList()
+                    if (listTrack.isNotEmpty()) {
+                        icProblem.visibility = View.GONE
+                        tvProblem.visibility = View.GONE
+                        btnUpdate.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                        tracksAdapter.updateList(listTrack)
+                    } else {
+                        showEmptyResult()
+                    }
+                } else {
+                    showConnectionError()
+                }
+            }
+
+            override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                showConnectionError()
+            }
+        })
+    }
+
+    private fun showEmptyResult() {
+        recyclerView.visibility = View.GONE
+        btnUpdate.visibility = View.GONE
+        icProblem.setImageResource(R.drawable.ic_not_found_music)
+        icProblem.visibility = View.VISIBLE
+        tvProblem.text = getString(R.string.not_fault_music)
+        tvProblem.visibility = View.VISIBLE
+    }
+
+    private fun showConnectionError() {
+        btnUpdate.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        icProblem.setImageResource(R.drawable.ic_communication_problems)
+        icProblem.visibility = View.VISIBLE
+        tvProblem.text = getString(R.string.connection_problem)
+        tvProblem.visibility = View.VISIBLE
+    }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("SEARCH_QUERY", searchQuery)
+
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
