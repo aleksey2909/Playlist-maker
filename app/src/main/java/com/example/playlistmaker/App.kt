@@ -7,12 +7,8 @@ import androidx.core.content.edit
 
 class App : Application() {
 
-    companion object {
-        const val PREFS_NAME = "app_theme"
-        const val DARK_THEME_KEY = "dark_theme"
-    }
-
     var darkTheme = false
+        private set
     private lateinit var sPref: SharedPreferences
 
     override fun onCreate() {
@@ -32,5 +28,10 @@ class App : Application() {
             if (darkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES
             else AppCompatDelegate.MODE_NIGHT_NO
         )
+    }
+
+    companion object {
+        const val PREFS_NAME = "app_theme"
+        const val DARK_THEME_KEY = "dark_theme"
     }
 }
