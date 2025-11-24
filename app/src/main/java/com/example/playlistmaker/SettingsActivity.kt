@@ -33,8 +33,6 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
-
         val back = findViewById<MaterialToolbar>(R.id.back)
         themeSwitcher = findViewById(R.id.themeSwitcher)
 
