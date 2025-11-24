@@ -5,5 +5,6 @@
         <item name="colorPrimary">@color/yp_black</item>
         <item name="colorPrimaryVariant">@color/yp_black</item>
         <item name="editTextBackground">@color/yp_black</item>
+        <item name="android:windowBackground">@color/yp_black</item>
     </style>
 </resources>

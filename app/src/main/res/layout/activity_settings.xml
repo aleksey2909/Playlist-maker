@@ -25,7 +25,7 @@
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:textColor="@color/black"
         android:fontFamily="@font/ys_display_medium"
-        android:id="@+id/black_theme"
+        android:id="@+id/themeSwitcher"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"

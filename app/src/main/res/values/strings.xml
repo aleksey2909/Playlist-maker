@@ -14,4 +14,6 @@
     <string name="update">Обновить</string>
     <string name="connection_problem">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="not_fault_music">Ничего не нашлось</string>
+    <string name="you_where_looking">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>

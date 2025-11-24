@@ -1,19 +1,27 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.net.toUri
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var themeSwitcher: SwitchMaterial
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +33,21 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+
         val back = findViewById<MaterialToolbar>(R.id.back)
+        themeSwitcher = findViewById(R.id.themeSwitcher)
+
+        val app = applicationContext as App
+
+        themeSwitcher.isChecked = app.darkTheme
 
         back.setNavigationOnClickListener {
             finish()
+        }
+
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            app.switchTheme(checked)
         }
 
         val share = findViewById<MaterialTextView>(R.id.share)
