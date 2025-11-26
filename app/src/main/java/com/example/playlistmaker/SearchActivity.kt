@@ -41,6 +41,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var tvProblem: TextView
     private lateinit var btnUpdate: Button
     private var searchQuery: String = ""
+    private var buttonMode: ButtonMode = ButtonMode.RECONNECT
 
     private val iTunesBaseUrl = "https://itunes.apple.com"
 
@@ -68,6 +69,7 @@ class SearchActivity : AppCompatActivity() {
         back.setNavigationOnClickListener {
             finish()
         }
+        val searchHistory by lazy { SearchHistory(this) }
 
         searchEditText = findViewById(R.id.searchEditText)
         clearDrawable = ContextCompat.getDrawable(this, R.drawable.ic_clear_16x16)!!
@@ -75,12 +77,16 @@ class SearchActivity : AppCompatActivity() {
         icProblem = findViewById(R.id.icProblem)
         tvProblem = findViewById(R.id.tvProblem)
         btnUpdate = findViewById(R.id.btnReconnect)
+        listTrack = searchHistory.getHistoryList()
 
         searchEditText.setText(searchQuery)
         updateIcons(searchEditText.text)
 
+        showRecentSearch()
+
         val onItemClickListener = OnItemClickListener { item ->
             val position = listTrack.indexOf(item)
+            searchHistory.addTrack(item)
         }
 
         recyclerView = findViewById<RecyclerView>(R.id.list_track)
@@ -101,9 +107,19 @@ class SearchActivity : AppCompatActivity() {
         })
 
         btnUpdate.setOnClickListener {
-            val query = searchEditText.text?.toString().orEmpty()
-            if (query.isNotEmpty()) {
-                search(query)
+            when(buttonMode) {
+                ButtonMode.RECONNECT -> {
+                    val query = searchEditText.text?.toString().orEmpty()
+                    if (query.isNotEmpty()) {
+                        search(query)
+                    }
+                }
+                ButtonMode.CLEAR_HISTORY -> {
+                    searchHistory.clear()
+                    tracksAdapter.updateList(emptyList())
+                    tvProblem.visibility = View.GONE
+                    btnUpdate.visibility = View.GONE
+                }
             }
         }
 
@@ -128,7 +144,9 @@ class SearchActivity : AppCompatActivity() {
                 val drawableWidth = drawableEnd.bounds.width()
                 if (x >= width - padding - drawableWidth) {
                     searchEditText.text.clear()
-                    tracksAdapter.updateList(emptyList())
+                    listTrack = searchHistory.getHistoryList()
+                    tracksAdapter.updateList(listTrack)
+                    showRecentSearch()
                     hideKeyboard()
                     return@setOnTouchListener true
                 }
@@ -173,12 +191,24 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showConnectionError() {
+        buttonMode = ButtonMode.RECONNECT
         btnUpdate.visibility = View.VISIBLE
         recyclerView.visibility = View.GONE
         icProblem.setImageResource(R.drawable.ic_communication_problems)
         icProblem.visibility = View.VISIBLE
         tvProblem.text = getString(R.string.connection_problem)
         tvProblem.visibility = View.VISIBLE
+    }
+
+
+    private fun showRecentSearch() {
+        if (!listTrack.isEmpty()) {
+            buttonMode = ButtonMode.CLEAR_HISTORY
+            tvProblem.text = getString(R.string.you_where_looking)
+            tvProblem.visibility = View.VISIBLE
+            btnUpdate.text = getString(R.string.clear_history)
+            btnUpdate.visibility = View.VISIBLE
+        }
     }
 
 
