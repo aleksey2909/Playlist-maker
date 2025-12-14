@@ -67,6 +67,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:textSize">13sp</item>
+        <item name="android:layout_marginEnd">16dp</item>
     </style>
 
     <style name="TrackTitleText">
@@ -75,6 +76,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">13sp</item>
+        <item name="android:layout_marginStart">16dp</item>
     </style>
 
 </resources>
