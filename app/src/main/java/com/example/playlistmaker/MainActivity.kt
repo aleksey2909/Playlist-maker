@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+//        val intent = Intent(this, TrackActivity::class.java)
+//        startActivity(intent)
 
         val search = findViewById<Button>(R.id.search)
         val mediaLibrary = findViewById<Button>(R.id.media_library)
