@@ -2,6 +2,8 @@ package com.example.playlistmaker.viewholder
 
 import android.content.res.Resources
 import android.text.Html
+import android.text.format.DateUtils
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,6 +13,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.utils.loadRounded
 import kotlin.math.roundToInt
 
 class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -24,18 +27,7 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         trackName.text = item.trackName.trim()
         artistName.text = item.artistName.trim()
         artistName.requestLayout()
-        trackTime.text = formatTrackTime(item.trackTimeMillis)
-        Glide.with(itemView.context)
-            .load(item.artworkUrl100)
-            .placeholder(R.drawable.placeholder)
-            .error(R.drawable.placeholder)
-            .transform(CenterCrop(), RoundedCorners((2 / Resources.getSystem().displayMetrics.density).roundToInt()))
-            .into(artworkUrl100)
-    }
-
-    fun formatTrackTime(millis: Long): String {
-        val minutes = millis / 1000 / 60
-        val seconds = (millis / 1000 % 60).toString().padStart(2, '0')
-        return "$minutes:$seconds"
+        trackTime.text = DateUtils.formatElapsedTime(item.trackTimeMillis / 1000)
+        artworkUrl100.loadRounded(item.artworkUrl100,2, R.drawable.placeholder)
     }
 }

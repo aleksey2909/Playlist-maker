@@ -37,19 +37,23 @@
     <TextView
         android:id="@+id/tvArtist"
         style="@style/ArtistTextStyle"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/trackTitle"
         app:layout_constraintBottom_toBottomOf="@id/ivAlbumArt"
         app:layout_constraintStart_toStartOf="@id/trackTitle"
+        app:layout_constraintEnd_toStartOf="@id/ic"
         android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintHorizontal_bias="0"
         tools:text="Michael Jackson" />
 
     <ImageView
         android:id="@+id/ic"
-        android:layout_width="14dp"
+        android:layout_width="wrap_content"
         android:layout_height="14dp"
         android:src="@drawable/ic_dot_13"
+        app:layout_constraintEnd_toStartOf="@id/tvDuration"
         app:layout_constraintBottom_toBottomOf="@id/tvArtist"
         app:layout_constraintStart_toEndOf="@id/tvArtist"
         app:layout_constraintTop_toTopOf="@id/tvArtist" />

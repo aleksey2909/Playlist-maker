@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
@@ -24,6 +25,7 @@ import com.example.playlistmaker.adapter.TracksAdapter
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.model.TracksResponse
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -85,7 +87,12 @@ class SearchActivity : AppCompatActivity() {
         showRecentSearch()
 
         val onItemClickListener = OnItemClickListener { item ->
-            val position = listTrack.indexOf(item)
+            val json = Gson().toJson(item)
+
+            val intent = Intent(this, TrackActivity::class.java)
+            intent.putExtra("track_json", json)
+            startActivity(intent)
+
             searchHistory.addTrack(item)
         }
 
