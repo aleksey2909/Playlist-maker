@@ -1,6 +1,8 @@
 package com.example.playlistmaker.adapter
 
 import android.annotation.SuppressLint
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.playlistmaker.model.Track
@@ -14,7 +16,9 @@ class TracksAdapter(
     private val onItemClickListener: OnItemClickListener
     ): RecyclerView.Adapter<TrackViewHolder> () {
 
-        override fun onCreateViewHolder(
+        private var isClickEnable = true
+
+    override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): TrackViewHolder {
@@ -27,7 +31,16 @@ class TracksAdapter(
         position: Int
     ) {
         holder.bind(tracks[position])
-        holder.itemView.setOnClickListener { onItemClickListener.onItemClick(tracks[holder.adapterPosition]) }
+        holder.itemView.setOnClickListener {
+            if (isClickEnable) {
+                isClickEnable = false
+                onItemClickListener.onItemClick(tracks[holder.adapterPosition])
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    isClickEnable = true
+                }, 1000L)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
