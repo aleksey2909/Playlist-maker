@@ -20,14 +20,7 @@ import kotlin.math.ceil
 
 class TrackActivity : AppCompatActivity() {
 
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-    }
-
-    private var playerState = STATE_DEFAULT
+    private var playerState = PlayerState.DEFAULT
 
     private lateinit var time: TextView
     private lateinit var play: ImageView
@@ -111,36 +104,38 @@ class TrackActivity : AppCompatActivity() {
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             play.isEnabled = true
-            playerState = STATE_PREPARED
+            playerState = PlayerState.PREPARED
         }
         mediaPlayer.setOnCompletionListener {
             play.setImageResource(R.drawable.ic_button_play)
-            playerState = STATE_PREPARED
+            playerState = PlayerState.PREPARED
         }
     }
 
     private fun playbackControl() {
         when(playerState) {
-            STATE_PLAYING -> {
+            PlayerState.PLAYING -> {
                 pausePlayer()
             }
-            STATE_PREPARED, STATE_PAUSED -> {
+            PlayerState.PREPARED, PlayerState.PAUSED -> {
                 startPlayer()
             }
+
+            else -> {}
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
         play.setImageResource(R.drawable.ic_button_pause)
-        playerState = STATE_PLAYING
+        playerState = PlayerState.PLAYING
         handler.post(updateTime)
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
         play.setImageResource(R.drawable.ic_button_play)
-        playerState = STATE_PAUSED
+        playerState = PlayerState.PAUSED
         handler.removeCallbacks(updateTime)
     }
 
