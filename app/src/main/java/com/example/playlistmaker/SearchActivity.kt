@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
@@ -13,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +37,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+    }
+
     private lateinit var searchEditText: EditText
     private lateinit var clearDrawable: Drawable
     private lateinit var searchDrawable: Drawable
@@ -42,8 +49,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var icProblem: ImageView
     private lateinit var tvProblem: TextView
     private lateinit var btnUpdate: Button
+    private lateinit var progressBar: ProgressBar
     private var searchQuery: String = ""
     private var buttonMode: ButtonMode = ButtonMode.RECONNECT
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { if(searchQuery.isNotBlank()) {search(searchQuery)} }
 
     private val iTunesBaseUrl = "https://itunes.apple.com"
 
@@ -79,18 +90,16 @@ class SearchActivity : AppCompatActivity() {
         icProblem = findViewById(R.id.icProblem)
         tvProblem = findViewById(R.id.tvProblem)
         btnUpdate = findViewById(R.id.btnReconnect)
+        progressBar = findViewById<ProgressBar>(R.id.progressBar)
         listTrack = searchHistory.getHistoryList()
 
         searchEditText.setText(searchQuery)
         updateIcons(searchEditText.text)
 
-        showRecentSearch()
-
         val onItemClickListener = OnItemClickListener { item ->
-            val json = Gson().toJson(item)
 
             val intent = Intent(this, TrackActivity::class.java)
-            intent.putExtra("track_json", json)
+            intent.putExtra("track", item)
             startActivity(intent)
 
             searchHistory.addTrack(item)
@@ -102,6 +111,8 @@ class SearchActivity : AppCompatActivity() {
         tracksAdapter = TracksAdapter(listTrack, onItemClickListener)
         recyclerView.adapter = tracksAdapter
 
+        showRecentSearch()
+
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 searchQuery = s?.toString().orEmpty()
@@ -109,7 +120,7 @@ class SearchActivity : AppCompatActivity() {
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+                searchDebounce()
             }
         })
 
@@ -130,17 +141,17 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val query = searchEditText.text?.toString().orEmpty()
-                if (query.isNotEmpty()) {
-                    search(query)
-                }
-                true
-            } else {
-                false
-            }
-        }
+//        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                val query = searchEditText.text?.toString().orEmpty()
+//                if (query.isNotEmpty()) {
+//                    search(query)
+//                }
+//                true
+//            } else {
+//                false
+//            }
+//        }
 
         searchEditText.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
@@ -164,8 +175,14 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search(query: String) {
+        icProblem.visibility = View.GONE
+        tvProblem.visibility = View.GONE
+        recyclerView.visibility = View.GONE
+        btnUpdate.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
         iTunesService.search(query).enqueue(object : Callback<TracksResponse> {
             override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
+                progressBar.visibility = View.GONE
                 if (response.isSuccessful) {
                     listTrack = response.body()?.results ?: emptyList()
                     if (listTrack.isNotEmpty()) {
@@ -183,6 +200,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                progressBar.visibility = View.GONE
                 showConnectionError()
             }
         })
@@ -199,6 +217,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showConnectionError() {
         buttonMode = ButtonMode.RECONNECT
+        btnUpdate.text = getString(R.string.update)
         btnUpdate.visibility = View.VISIBLE
         recyclerView.visibility = View.GONE
         icProblem.setImageResource(R.drawable.ic_communication_problems)
@@ -210,9 +229,11 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showRecentSearch() {
         if (!listTrack.isEmpty()) {
+            recyclerView.visibility = View.VISIBLE
             buttonMode = ButtonMode.CLEAR_HISTORY
             tvProblem.text = getString(R.string.you_where_looking)
             tvProblem.visibility = View.VISIBLE
+            icProblem.visibility = View.GONE
             btnUpdate.text = getString(R.string.clear_history)
             btnUpdate.visibility = View.VISIBLE
         }
@@ -242,6 +263,11 @@ class SearchActivity : AppCompatActivity() {
     private fun hideKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
 

@@ -83,12 +83,12 @@
             android:layout_height="wrap_content"
             android:background="@drawable/circle_background"
             android:src="@drawable/ic_add_track"
-            app:layout_constraintBottom_toBottomOf="@id/play"
+            app:layout_constraintBottom_toBottomOf="@id/btnPlay"
             app:layout_constraintStart_toStartOf="@id/leftBorder"
-            app:layout_constraintTop_toTopOf="@id/play" />
+            app:layout_constraintTop_toTopOf="@id/btnPlay" />
 
         <ImageView
-            android:id="@+id/play"
+            android:id="@+id/btnPlay"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_button_play"
@@ -103,21 +103,21 @@
             android:layout_height="wrap_content"
             android:background="@drawable/circle_background"
             android:src="@drawable/ic_like"
-            app:layout_constraintBottom_toBottomOf="@id/play"
+            app:layout_constraintBottom_toBottomOf="@id/btnPlay"
             app:layout_constraintEnd_toEndOf="@id/rightBorder"
             app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintTop_toTopOf="@id/play" />
+            app:layout_constraintTop_toTopOf="@id/btnPlay" />
 
         <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0:30"
+            android:text="0:00"
             android:textColor="@color/search_title_color"
             android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@id/play"
-            app:layout_constraintStart_toStartOf="@id/play"
-            app:layout_constraintTop_toBottomOf="@id/play" />
+            app:layout_constraintEnd_toEndOf="@id/btnPlay"
+            app:layout_constraintStart_toStartOf="@id/btnPlay"
+            app:layout_constraintTop_toBottomOf="@id/btnPlay" />
 
         <TextView
             android:id="@+id/durationTitle"

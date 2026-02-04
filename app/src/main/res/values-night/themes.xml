@@ -2,6 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
+        <item name="colorAccent">@color/main_color</item>
         <item name="colorPrimary">@color/yp_black</item>
         <item name="colorPrimaryVariant">@color/yp_black</item>
         <item name="editTextBackground">@color/yp_black</item>
