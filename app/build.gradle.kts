@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.retrofit)
     implementation(libs.gson)
+    implementation(libs.lifecycleViewModel)
+    implementation(libs.lifecycleLiveData)
     kapt(libs.glide.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

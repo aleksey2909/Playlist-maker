@@ -1,53 +1,58 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.ui.activity
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.net.toUri
-import androidx.core.view.WindowInsetsControllerCompat
+import com.example.playlistmaker.presentation.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.presentation.ui.SettingsViewModel
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var themeSwitcher: SwitchMaterial
+    private lateinit var viewModel: SettingsViewModel
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
+        viewModel = Creator.provideSettingsViewModel(this)
+
         val back = findViewById<MaterialToolbar>(R.id.back)
         themeSwitcher = findViewById(R.id.themeSwitcher)
 
-        val app = applicationContext as App
+        back.setNavigationOnClickListener { finish() }
 
-        themeSwitcher.isChecked = app.darkTheme
-
-        back.setNavigationOnClickListener {
-            finish()
+        viewModel.darkTheme.observe(this) { isDark ->
+            themeSwitcher.isChecked = isDark
         }
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            app.switchTheme(checked)
+            viewModel.onThemeSwitched(checked)
         }
 
+        initShare()
+        initSupport()
+        initAgreement()
+    }
+
+    private fun initShare() {
         val share = findViewById<MaterialTextView>(R.id.share)
         share.setOnClickListener {
             val shareIntent = Intent().apply {
@@ -58,7 +63,9 @@ class SettingsActivity : AppCompatActivity() {
             val chooser = Intent.createChooser(shareIntent, getText(R.string.share_to))
             startActivity(chooser)
         }
+    }
 
+    private fun initSupport() {
         val writeToSupport = findViewById<MaterialTextView>(R.id.writeToSupport)
         writeToSupport.setOnClickListener {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
@@ -67,9 +74,10 @@ class SettingsActivity : AppCompatActivity() {
                 putExtra(Intent.EXTRA_TEXT, getText(R.string.text_email))
             }
             startActivity(intent)
-
         }
+    }
 
+    private fun initAgreement() {
         val flatteringAgreement = findViewById<MaterialTextView>(R.id.flatteringAgreement)
         flatteringAgreement.setOnClickListener {
             val url = "https://yandex.ru/legal/practicum_offer/ru/"

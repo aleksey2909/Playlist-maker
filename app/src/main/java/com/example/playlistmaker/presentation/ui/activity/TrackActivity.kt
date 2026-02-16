@@ -1,7 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.ui.activity
 
 import android.annotation.SuppressLint
-import android.media.Image
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -12,10 +11,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.PlayerState
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.utils.loadRounded
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.gson.Gson
 import kotlin.math.ceil
 
 class TrackActivity : AppCompatActivity() {

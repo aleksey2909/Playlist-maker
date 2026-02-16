@@ -5,9 +5,9 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.domain.models.Track
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.OnItemClickListener
+import com.example.playlistmaker.domain.OnItemClickListener
 import com.example.playlistmaker.R
 import com.example.playlistmaker.viewholder.TrackViewHolder
 

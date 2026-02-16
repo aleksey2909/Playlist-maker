@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="@color/background"
 
-        tools:context=".TrackActivity">
+        tools:context=".presentation.ui.activity.TrackActivity">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/back"
