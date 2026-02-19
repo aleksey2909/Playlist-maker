@@ -4,26 +4,26 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.data.storage.ThemeRepositoryImpl
 import com.example.playlistmaker.domain.repository.ThemeRepository
-import com.example.playlistmaker.domain.usecase.SwitchThemeUseCase
+import com.example.playlistmaker.domain.usecase.SwitchThemeUseCaseImpl
 
 class App : Application() {
 
     private lateinit var themeRepository: ThemeRepository
-    private lateinit var switchThemeUseCase: SwitchThemeUseCase
+    private lateinit var switchThemeUseCaseImpl: SwitchThemeUseCaseImpl
 
     override fun onCreate() {
         super.onCreate()
 
         val sharedPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         themeRepository = ThemeRepositoryImpl(sharedPrefs)
-        switchThemeUseCase = SwitchThemeUseCase(themeRepository)
+        switchThemeUseCaseImpl = SwitchThemeUseCaseImpl(themeRepository)
 
-        val isDarkTheme = switchThemeUseCase.isDarkThemeEnabled()
+        val isDarkTheme = switchThemeUseCaseImpl.isDarkThemeEnabled()
         applyTheme(isDarkTheme)
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        switchThemeUseCase.execute(darkThemeEnabled)
+        switchThemeUseCaseImpl.execute(darkThemeEnabled)
         applyTheme(darkThemeEnabled)
     }
 

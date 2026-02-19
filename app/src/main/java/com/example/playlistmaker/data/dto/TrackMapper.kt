@@ -16,4 +16,18 @@ class TrackMapper{
             artworkUrl100 = dto.artworkUrl100,
             previewUrl = dto.previewUrl
         )
+
+    fun toDto(track: Track): TrackDto =
+        TrackDto(
+            trackId = track.trackId,
+            trackName = track.trackName,
+            collectionName = track.collectionName,
+            releaseDate = track.releaseDate,
+            primaryGenreName = track.primaryGenreName,
+            country = track.country,
+            artistName = track.artistName,
+            trackTimeMillis = track.trackTimeMillis,
+            artworkUrl100 = track.artworkUrl100,
+            previewUrl = track.previewUrl
+        )
 }
