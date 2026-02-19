@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.utils.loadRounded
+import com.example.playlistmaker.presentation.utils.loadRounded
 import com.google.android.material.appbar.MaterialToolbar
 import kotlin.math.ceil
 

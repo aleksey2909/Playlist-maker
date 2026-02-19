@@ -21,9 +21,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.presentation.Creator
+import com.example.playlistmaker.app.di.Creator
 import com.example.playlistmaker.R
-import com.example.playlistmaker.adapter.TracksAdapter
+import com.example.playlistmaker.presentation.adapter.TracksAdapter
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.ui.SearchState
 import com.example.playlistmaker.presentation.ui.SearchViewModel
@@ -126,6 +126,13 @@ class SearchActivity : AppCompatActivity() {
 
     private fun render(state: SearchState) {
         when (state) {
+            is SearchState.Default -> {
+                progressBar.visibility = View.GONE
+                recyclerView.visibility = View.GONE
+                icProblem.visibility = View.GONE
+                tvProblem.visibility = View.GONE
+                btnUpdate.visibility = View.GONE
+            }
             is SearchState.Loading -> {
                 progressBar.visibility = View.VISIBLE
                 recyclerView.visibility = View.GONE
@@ -175,9 +182,10 @@ class SearchActivity : AppCompatActivity() {
 
     private fun updateIcons(text: Editable?) {
         val endIcon = if (!text.isNullOrEmpty()) clearDrawable else null
-        searchEditText.setCompoundDrawablesWithIntrinsicBounds(
+        searchEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             searchDrawable, null, endIcon, null
         )
+
     }
 
     private fun hideKeyboard() {

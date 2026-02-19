@@ -5,13 +5,13 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.data.SearchHistory
-import com.example.playlistmaker.domain.TracksInteractor
+import com.example.playlistmaker.domain.interactors.SearchHistoryInteractor
+import com.example.playlistmaker.domain.interactors.TracksInteractor
 import com.example.playlistmaker.domain.models.Track
 
 class SearchViewModel(
     private val interactor: TracksInteractor,
-    private val searchHistory: SearchHistory
+    private val searchHistoryInteractor: SearchHistoryInteractor
 ) : ViewModel() {
 
     companion object {
@@ -39,7 +39,7 @@ class SearchViewModel(
         when (_state.value) {
             is SearchState.Error -> performSearch()
             is SearchState.History -> {
-                searchHistory.clear()
+                searchHistoryInteractor.clear()
                 showHistoryOrEmpty()
             }
             else -> Unit
@@ -47,14 +47,16 @@ class SearchViewModel(
     }
 
     fun onTrackClicked(track: Track) {
-        searchHistory.addTrack(track)
+        searchHistoryInteractor.addTrack(track)
     }
 
     fun restoreState() {
-        if (searchQuery.isBlank()) {
-            showHistoryOrEmpty()
+        val history = searchHistoryInteractor.getHistory()
+
+        _state.value = if (history.isNotEmpty()) {
+            SearchState.History(history)
         } else {
-            performSearch()
+            SearchState.Default
         }
     }
 
@@ -82,9 +84,9 @@ class SearchViewModel(
     }
 
     private fun showHistoryOrEmpty() {
-        val history = searchHistory.getHistoryList()
+        val history = searchHistoryInteractor.getHistory()
         if (history.isEmpty()) {
-            _state.postValue(SearchState.Empty)
+            _state.postValue(SearchState.Default)
         } else {
             _state.postValue(SearchState.History(history))
         }

@@ -5,10 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.net.toUri
-import com.example.playlistmaker.presentation.Creator
+import com.example.playlistmaker.app.di.Creator
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.ui.SettingsViewModel
 import com.google.android.material.appbar.MaterialToolbar
@@ -41,10 +42,17 @@ class SettingsActivity : AppCompatActivity() {
 
         viewModel.darkTheme.observe(this) { isDark ->
             themeSwitcher.isChecked = isDark
+
+            val mode = if (isDark) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+            AppCompatDelegate.setDefaultNightMode(mode)
         }
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            viewModel.onThemeSwitched(checked)
+            viewModel.switchTheme(checked)
         }
 
         initShare()
