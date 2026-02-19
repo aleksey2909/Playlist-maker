@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/background"
-    tools:context=".SearchActivity">
+    tools:context=".presentation.ui.activity.SearchActivity">
 
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -30,7 +30,6 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:drawableEnd="@drawable/ic_clear_16x16"
         android:inputType="text"
         android:singleLine="true"/>
 
